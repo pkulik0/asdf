@@ -1,6 +1,9 @@
 #include <stdio.h>
+#include "asdf.h"
 
 int main() {
-    printf("Hello, World!\n");
+    asdf_init();
+    asdf_run();
+    asdf_destroy();
     return 0;
 }

@@ -5,30 +5,37 @@
 #ifndef ASDF_TREE_H
 #define ASDF_TREE_H
 
-#include "window.h"
+#include "ncurses.h"
+#include "dimensions.h"
 
 typedef struct Tree tree_t;
 
 typedef struct Branches {
     tree_t * left;
     tree_t * right;
+    double split_ratio;
+    bool is_horizontal;
 } branches_t;
 
 typedef enum Content {
-    TREE_EMPTY, TREE_BRANCHES, TREE_WINDOW
+    TREE_BRANCHES, TREE_WINDOW
 } content_t;
 
 struct Tree {
+    dimensions_t size;
+    dimensions_t position;
+
     union {
         branches_t children;
-        window_t* window;
+        WINDOW* window;
     };
     content_t content;
 };
 
-tree_t* tree_create_window(window_t* window_ptr);
-tree_t* tree_create_branch(tree_t* left_ptr, tree_t* right_ptr);
-void attach_to_tree(tree_t* tree_ptr, tree_t* tree_child_ptr);
-void tree_destroy(tree_t* tree_ptr);
+tree_t* tree_create_root(dimensions_t term_size);
+tree_t* tree_create_leaf();
+tree_t* tree_create_branch(double split_ratio);
+int tree_attach(tree_t* parent, tree_t* child);
+void tree_destroy(tree_t* tree);
 
 #endif //ASDF_TREE_H
