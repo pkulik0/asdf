@@ -12,6 +12,13 @@ typedef struct Asdf {
 
 asdf_t asdf;
 
+static void print_sth(WINDOW* w) {
+    static int count = 0;
+    box(w, 0, 0);
+    mvwprintw(w, 1, 1, "Window %d", count++);
+    wrefresh(w);
+}
+
 void asdf_init() {
     // Initialize ncurses
     initscr();
@@ -28,21 +35,31 @@ void asdf_init() {
     tree_attach(asdf.root, t1);
 
     tree_t* t2 = tree_create_branch(0.8);
-    t2->children.is_horizontal = false;
+    t2->branch.is_horizontal = false;
 
-    tree_attach(t1, tree_create_leaf());
+    tree_attach(t1, tree_create_leaf(print_sth));
     tree_attach(t1, t2);
 
-    tree_attach(t2, tree_create_leaf());
-    tree_attach(t2, tree_create_leaf());
+    tree_attach(t2, tree_create_leaf(print_sth));
+    tree_attach(t2, tree_create_leaf(print_sth));
+}
 
+void update_tree(tree_t* tree) {
+    if(!tree) return;
 
-
-
-
+    if(tree->content == LEAF) {
+        tree->leaf.on_update(tree->leaf.window);
+    } else if (tree->content == BRANCH) {
+        update_tree(tree->branch.left);
+        update_tree(tree->branch.right);
+    }
 }
 
 void asdf_run() {
+    getch();
+    update_tree(asdf.root);
+    getch();
+    update_tree(asdf.root);
     getch();
 }
 

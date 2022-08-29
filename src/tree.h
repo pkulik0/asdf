@@ -10,30 +10,42 @@
 
 typedef struct Tree tree_t;
 
-typedef struct Branches {
-    tree_t * left;
-    tree_t * right;
+typedef void (*leaf_update_fn)(WINDOW*);
+
+typedef struct Leaf {
+    WINDOW* window;
+    leaf_update_fn on_update;
+} leaf_t;
+
+typedef struct Branch {
+    tree_t* left;
+    tree_t* right;
+
     double split_ratio;
     bool is_horizontal;
-} branches_t;
+} branch_t;
 
 typedef enum Content {
-    TREE_BRANCHES, TREE_WINDOW
+    EMPTY,
+    BRANCH,
+    LEAF,
 } content_t;
 
 struct Tree {
+    tree_t* parent;
+
     dimensions_t size;
     dimensions_t position;
 
-    union {
-        branches_t children;
-        WINDOW* window;
-    };
     content_t content;
+    union {
+        branch_t branch;
+        leaf_t leaf;
+    };
 };
 
 tree_t* tree_create_root(dimensions_t term_size);
-tree_t* tree_create_leaf();
+tree_t* tree_create_leaf(leaf_update_fn on_update);
 tree_t* tree_create_branch(double split_ratio);
 int tree_attach(tree_t* parent, tree_t* child);
 void tree_destroy(tree_t* tree);
