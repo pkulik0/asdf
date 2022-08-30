@@ -3,5 +3,5 @@ project(asdf C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(asdf src/main.c src/tree.h src/dimensions.h src/tree.c src/asdf.h src/asdf.c src/dimensions.c)
+add_executable(asdf src/main.c src/tree.c src/tree.h src/asdf.c src/asdf.h src/dimensions.h)
 target_link_libraries(asdf curses)

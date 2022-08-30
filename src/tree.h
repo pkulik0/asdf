@@ -10,11 +10,11 @@
 
 typedef struct Tree tree_t;
 
-typedef void (*leaf_update_fn)(WINDOW*);
+typedef void (*leaf_update_func)(WINDOW*);
 
 typedef struct Leaf {
     WINDOW* window;
-    leaf_update_fn on_update;
+    leaf_update_func on_update;
 } leaf_t;
 
 typedef struct Branch {
@@ -26,7 +26,6 @@ typedef struct Branch {
 } branch_t;
 
 typedef enum Content {
-    EMPTY,
     BRANCH,
     LEAF,
 } content_t;
@@ -44,10 +43,14 @@ struct Tree {
     };
 };
 
-tree_t* tree_create_root(dimensions_t term_size);
-tree_t* tree_create_leaf(leaf_update_fn on_update);
-tree_t* tree_create_branch(double split_ratio);
-int tree_attach(tree_t* parent, tree_t* child);
+tree_t* tree_root(tree_t* tree);
+tree_t* tree_leaf(leaf_update_func on_update);
+tree_t* tree_branch(double split_ratio, bool is_horizontal, tree_t* left, tree_t* right);
 void tree_destroy(tree_t* tree);
+
+typedef void (*traverse_func)(tree_t*);
+
+void tree_build(tree_t* tree);
+void tree_refresh(tree_t* tree);
 
 #endif //ASDF_TREE_H
