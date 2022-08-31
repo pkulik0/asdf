@@ -45,9 +45,12 @@ void tree_traverse(tree_t* tree, traverse_func do_work) {
     }
 }
 
-static void __tree_build(tree_t* tree) {
+static void __tree_update(tree_t* tree) {
     if(tree->content == LEAF) {
+        delwin(tree->leaf.window);
         tree->leaf.window = newwin(tree->size.y, tree->size.x, tree->position.y, tree->position.x);
+        tree->leaf.on_update(tree->leaf.window);
+
         return;
     }
 
@@ -73,22 +76,12 @@ static void __tree_build(tree_t* tree) {
     }
 }
 
-void tree_build(tree_t* tree) {
+void tree_update(tree_t* tree) {
     if(!tree->parent)
         tree->size = (dimensions_t){getmaxx(stdscr), getmaxy(stdscr)};
 
-    tree_traverse(tree, __tree_build);
+    tree_traverse(tree, __tree_update);
 }
-
-static void __tree_refresh(tree_t* tree) {
-    if(tree->content != LEAF) return;
-    tree->leaf.on_update(tree->leaf.window);
-}
-
-void tree_refresh(tree_t* tree) {
-    tree_traverse(tree, __tree_refresh);
-}
-
 
 void tree_destroy(tree_t* tree) {
     if(tree->content == BRANCH) {
@@ -98,4 +91,15 @@ void tree_destroy(tree_t* tree) {
         delwin(tree->leaf.window);
     }
     free(tree);
+}
+
+leaf_t* get_largest_leaf(tree_t* tree) {
+    while(tree->content != LEAF) {
+        if(tree->branch.split_ratio > 0.50) {
+            tree = tree->branch.left;
+        } else {
+            tree = tree->branch.right;
+        }
+    }
+    return &tree->leaf;
 }

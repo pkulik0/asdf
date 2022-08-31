@@ -8,22 +8,23 @@
 
 typedef struct Asdf {
     tree_t* root;
+    leaf_t* focused_leaf;
 } asdf_t;
 
 asdf_t asdf;
 
-#define padding(w, X, Y) wmove(w, getcury(w)+(Y), getcurx(w)+(X))
+#define IF_FOCUSED(X) if(asdf.focused_leaf) \
+                        if(asdf.focused_leaf->window == w) \
+                            { X }
 
 static void show_files(WINDOW* w) {
     wbkgd(w, COLOR_PAIR(2));
     mvwprintw(w, 1, 1, "FILES\n");
 
-    padding(w, 1, 0);
-    wprintw(w, "main.c\n");
-    padding(w, 2, 0);
-    wprintw(w, "tree.c\n");
-    padding(w, 2, 0);
-    wprintw(w, "tree.h\n");
+    IF_FOCUSED(
+            mvwprintw(w, 3, 1, "SELECTED\n");
+            box(w, 0, 0);
+            )
 
     wrefresh(w);
 }
@@ -31,39 +32,27 @@ static void show_files(WINDOW* w) {
 static void show_editor(WINDOW* w) {
     mvwprintw(w, 1, 1, "EDITOR\n");
 
-    padding(w, 1, 0);
-    wattron(w, COLOR_PAIR(1));
-    wprintw(w, "1 ");
-    wattroff(w, COLOR_PAIR(1));
-    wprintw(w, "def main():\n");
+    IF_FOCUSED(
+            mvwprintw(w, 3, 1, "SELECTED\n");
+            box(w, 0, 0);
+    )
 
-    int i = 2;
-    padding(w, 1, 0);
-    wattron(w, COLOR_PAIR(1));
-    wprintw(w, "%d ", i);
-    wattroff(w, COLOR_PAIR(1));
-    wprintw(w, "\tprint(\"hello, world!\")\n");
-
-    padding(w, 1, 0);
-    wattron(w, COLOR_PAIR(1));
-    wprintw(w, "3 ");
-    wattroff(w, COLOR_PAIR(1));
-    wprintw(w, "\n");
-
-    box(w, 0, 0);
     wrefresh(w);
 }
 
 static void show_terminal(WINDOW* w) {
     wbkgd(w, COLOR_PAIR(3));
     mvwprintw(w, 1, 1, "TERMINAL\n");
-    mvwprintw(w, getmaxy(w)-2, 1, "$ sudo apt-get update");
+
+    IF_FOCUSED(
+            mvwprintw(w, 3, 1, "SELECTED\n");
+            box(w, 0, 0);
+    )
 
     wrefresh(w);
 }
 
-void asdf_init() {
-    // Initialize ncurses
+static void ncurses_init() {
     initscr();
     raw();
     noecho();
@@ -78,26 +67,26 @@ void asdf_init() {
     init_color(Color(1), 80, 80, 80);
     init_pair(2, COLOR_WHITE, Color(0));
     init_pair(3, COLOR_WHITE, Color(1));
+}
 
-    asdf.root = tree_root(
-            tree_branch(0.2, true,
+void asdf_init() {
+    ncurses_init();
+
+    asdf.root = tree_root(tree_branch(0.15, true,
                         tree_leaf(show_files),
-                        tree_branch(0.75, false,
+                        tree_branch(0.80, false,
                                     tree_leaf(show_editor),
-                                    tree_leaf(show_terminal)
-                                    )
-                        )
-            );
+                                    tree_leaf(show_terminal))));
 
-    tree_build(asdf.root);
+    tree_update(asdf.root);
+    asdf.focused_leaf = get_largest_leaf(asdf.root);
 }
 
 void asdf_run() {
     int keycode;
     while((keycode = getch())) {
         if(keycode == KEY_ENTER) break;
-        tree_build(asdf.root);
-        tree_refresh(asdf.root);
+        tree_update(asdf.root);
     }
 }
 

@@ -50,7 +50,8 @@ void tree_destroy(tree_t* tree);
 
 typedef void (*traverse_func)(tree_t*);
 
-void tree_build(tree_t* tree);
-void tree_refresh(tree_t* tree);
+void tree_update(tree_t* tree);
+
+leaf_t* get_largest_leaf(tree_t* tree);
 
 #endif //ASDF_TREE_H
