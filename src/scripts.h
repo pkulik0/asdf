@@ -5,10 +5,9 @@
 #ifndef ASDF_SCRIPTS_H
 #define ASDF_SCRIPTS_H
 
-#include "lua.h"
-#include "lualib.h"
-#include "lauxlib.h"
+#define PY_SSIZE_T_CLEAN
+#include <Python.h>
 
-void scripts_run();
+void scripts_run(const char* name);
 
 #endif //ASDF_SCRIPTS_H

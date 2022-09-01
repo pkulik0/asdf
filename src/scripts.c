@@ -4,19 +4,18 @@
 
 #include "scripts.h"
 
-void scripts_run() {
-    lua_State* L = luaL_newstate();
-    luaL_openlibs(L);
-
-    char* code = "print('Hello World')";
-
-    if(luaL_loadstring(L, code) == LUA_OK) {
-        if(lua_pcall(L, 0, 0, 0) == LUA_OK) {
-            lua_pop(L, lua_gettop(L));
-        }
+void scripts_run(const char* name) {
+    wchar_t *program = Py_DecodeLocale(name, NULL);
+    if (program == NULL) {
+        fprintf(stderr, "Fatal error: cannot decode argv[0]\n");
+        exit(1);
     }
-
-    lua_close(L);
+    Py_SetProgramName(program);
+    Py_Initialize();
+    PyRun_SimpleString("from time import time,ctime\n"
+                       "print('Today is', ctime(time()))\n");
+    if (Py_FinalizeEx() < 0) {
+        exit(120);
+    }
+    PyMem_RawFree(program);
 }
-
-
