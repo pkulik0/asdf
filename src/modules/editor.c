@@ -20,30 +20,31 @@ void editor_destroy() {
     free(editor.files);
 }
 
+#define START_COL 1
+
 void editor_update(WINDOW* w) {
-    mvwprintw(w, 1, 1, "EDITOR\n");
+    mvwprintw(w, 1, START_COL, "EDITOR\n");
 
     if(editor.files_size > 0) {
         file_t* file = &editor.files[editor.active_file_idx];
-        mvwprintw(w, 5, 1, "File: '%s'\n", file->name);
+        mvwprintw(w, 5, START_COL, "File: '%s'\n", file->name);
 
-        int line = 0;
-        int column = 0;
+        int y = getcury(w) + 1;
+        int x = START_COL;
         for(size_t i = 0; i < file->size; i++) {
             if(file->buffer[i] == '\n') {
-                line++;
-                column = 0;
+                y++;
+                x = START_COL;
                 continue;
             }
-
-            mvwprintw(w, 7+line, 1+column, "%c", file->buffer[i]);
-            column++;
+            mvwprintw(w, y, x, "%c", file->buffer[i]);
+            x++;
         }
     } else {
-        mvwprintw(w, 5, 1, "ASDF: open a file using the /edit or /e command");
+        mvwprintw(w, 5, START_COL, "ASDF: open a file using the /edit or /e command");
     }
 
-    IF_FOCUSED(mvwprintw(w, 3, 1, "SELECTED\n");
+    IF_FOCUSED(mvwprintw(w, 3, START_COL, "SELECTED\n");
                        box(w, 0, 0););
 
     wrefresh(w);
