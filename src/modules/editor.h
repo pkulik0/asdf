@@ -9,11 +9,19 @@
 #include "asdf.h"
 #include "file.h"
 
+typedef struct FileInfo {
+    file_t file;
+    size_t line_offset;
+} file_info_t;
+
 typedef struct Editor {
-    file_t* files;
+    file_info_t* files;
     size_t files_capacity;
     size_t files_size;
+
     size_t active_file_idx;
+
+    bool relative_line_num;
 } editor_t;
 
 void editor_init();

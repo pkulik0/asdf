@@ -50,7 +50,7 @@ static void ncurses_init() {
 
 void asdf_init() {
     editor_init();
-    editor_receive(ASDF_COMMAND, "/e test.txt");
+    editor_receive(ASDF_COMMAND, "/e asdf.c");
 
     ncurses_init();
 
