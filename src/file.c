@@ -4,23 +4,29 @@
 
 #include "file.h"
 
-// TODO: handle errors
 int file_open(file_t* file, const char* filename) {
     size_t filename_len = strnlen(filename, FILENAME_MAX);
     memcpy(file->name, filename, filename_len);
 
     file->stream = fopen(filename, "a+");
+    if(!file->stream) return -1;
 
-    fseek(file->stream, 0, SEEK_END);
-    file->size = ftell(file->stream);
-    file->capacity = file->size * 2;
+    if(fseek(file->stream, 0, SEEK_END) == -1) return -1;
+
+    int size = ftell(file->stream);
+    if(size == -1) return -1;
+
+    file->size = size;
+    file->capacity = size * 2;
+
     rewind(file->stream);
 
     file->buffer = malloc(file->capacity);
-//    file->buffer[file->size] = '\0';
-    fread(file->buffer, file->size, 1, file->stream);
+    if(!file->buffer) return -1;
 
+    fread(file->buffer, file->size, 1, file->stream);
     match_filetype(file);
+
     return 0;
 }
 

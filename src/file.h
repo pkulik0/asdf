@@ -24,6 +24,7 @@ typedef struct File {
 } file_t;
 
 int file_open(file_t* file, const char* filename);
+int file_save(file_t* file);
 void file_close(file_t* file);
 
 void match_filetype(file_t* file);
