@@ -5,27 +5,23 @@
 #include "file.h"
 
 // TODO: handle errors
-file_t file_open(const char* filename) {
-    file_t file;
+int file_open(file_t* file, const char* filename) {
+    size_t filename_len = strnlen(filename, FILENAME_MAX);
+    memcpy(file->name, filename, filename_len);
 
-    size_t filename_len = strnlen(filename, MAX_LENGTH);
-    file.name = malloc(sizeof(char) * filename_len);
-    memcpy(file.name, filename, filename_len);
+    file->stream = fopen(filename, "a+");
 
-    file.stream = fopen(filename, "a+");
+    fseek(file->stream, 0, SEEK_END);
+    file->size = ftell(file->stream);
+    file->capacity = file->size * 2;
+    rewind(file->stream);
 
-    fseek(file.stream, 0, SEEK_END);
-    file.size = ftell(file.stream);
-    file.capacity = file.size * 2;
-    rewind(file.stream);
+    file->buffer = malloc(file->capacity);
+//    file->buffer[file->size] = '\0';
+    fread(file->buffer, file->size, 1, file->stream);
 
-    file.buffer = malloc(file.capacity);
-    file.buffer[file.size] = '\0';
-    fread(file.buffer, file.size, 1, file.stream);
-
-    match_filetype(&file);
-
-    return file;
+    match_filetype(file);
+    return 0;
 }
 
 void file_close(file_t* file) {

@@ -52,6 +52,6 @@ typedef void (*traverse_func)(tree_t*);
 
 void tree_update(tree_t* tree);
 
-leaf_t* get_largest_leaf(tree_t* tree);
+leaf_t* get_first_leaf(tree_t* tree);
 
 #endif //ASDF_TREE_H

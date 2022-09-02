@@ -4,18 +4,8 @@
 
 #include "ncurses.h"
 #include "asdf.h"
-#include "tree.h"
 
-typedef struct Asdf {
-    tree_t* root;
-    leaf_t* focused_leaf;
-} asdf_t;
-
-asdf_t asdf;
-
-#define IF_FOCUSED(X) if(asdf.focused_leaf) \
-                        if(asdf.focused_leaf->window == w) \
-                            { X }
+#include "modules/editor.h"
 
 static void show_files(WINDOW* w) {
     wbkgd(w, COLOR_PAIR(2));
@@ -25,17 +15,6 @@ static void show_files(WINDOW* w) {
             mvwprintw(w, 3, 1, "SELECTED\n");
             box(w, 0, 0);
             )
-
-    wrefresh(w);
-}
-
-static void show_editor(WINDOW* w) {
-    mvwprintw(w, 1, 1, "EDITOR\n");
-
-    IF_FOCUSED(
-            mvwprintw(w, 3, 1, "SELECTED\n");
-            box(w, 0, 0);
-    )
 
     wrefresh(w);
 }
@@ -70,16 +49,19 @@ static void ncurses_init() {
 }
 
 void asdf_init() {
+    editor_init();
+    editor_receive(ASDF_COMMAND, "/e test.txt");
+
     ncurses_init();
 
     asdf.root = tree_root(tree_branch(0.15, true,
                         tree_leaf(show_files),
                         tree_branch(0.80, false,
-                                    tree_leaf(show_editor),
+                                    tree_leaf(editor_update),
                                     tree_leaf(show_terminal))));
 
     tree_update(asdf.root);
-    asdf.focused_leaf = get_largest_leaf(asdf.root);
+    asdf.focused_leaf = get_first_leaf(asdf.root);
 }
 
 void asdf_run() {
@@ -92,5 +74,6 @@ void asdf_run() {
 
 void asdf_destroy() {
     tree_destroy(asdf.root);
+    editor_destroy();
     endwin();
 }

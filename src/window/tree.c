@@ -93,7 +93,7 @@ void tree_destroy(tree_t* tree) {
     free(tree);
 }
 
-leaf_t* get_largest_leaf(tree_t* tree) {
+leaf_t* get_first_leaf(tree_t* tree) {
     while(tree->content != LEAF) {
         if(tree->branch.split_ratio > 0.50) {
             tree = tree->branch.left;

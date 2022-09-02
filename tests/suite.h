@@ -5,9 +5,9 @@
 #ifndef ASDF_SUITE_H
 #define ASDF_SUITE_H
 
-#include "../src/tree.h"
-#include "../src/asdf.h"
-#include "../src/dimensions.h"
+#include "asdf.h"
+#include "window/tree.h"
+#include "window/dimensions.h"
 
 #include "assert.h"
 #include "stdbool.h"

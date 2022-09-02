@@ -7,10 +7,7 @@
 
 #include "stdio.h"
 #include "stdlib.h"
-#include "sys/stat.h"
 #include "string.h"
-
-#define MAX_LENGTH 4096
 
 typedef enum FileType {
     FILE_TEXT, FILE_C, FILE_PYTHON, FILE_HTML, FILE_CSS, FILE_JAVASCRIPT
@@ -18,7 +15,7 @@ typedef enum FileType {
 
 typedef struct File {
     FILE* stream;
-    char* name;
+    char name[FILENAME_MAX];
     filetype_t type;
     char* buffer;
 
@@ -26,8 +23,7 @@ typedef struct File {
     size_t size;
 } file_t;
 
-
-file_t file_open(const char* filename);
+int file_open(file_t* file, const char* filename);
 void file_close(file_t* file);
 
 void match_filetype(file_t* file);
