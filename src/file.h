@@ -10,8 +10,22 @@
 #include "string.h"
 
 typedef enum FileType {
-    FILE_TEXT, FILE_C, FILE_PYTHON, FILE_HTML, FILE_CSS, FILE_JAVASCRIPT
+    FILE_TEXT,
+    FILE_C,
+    FILE_PYTHON,
+    FILE_HTML,
+    FILE_CSS,
+    FILE_JAVASCRIPT,
 } filetype_t;
+
+//const char* const FILETYPE_TABLE[] = {
+//        "Text",
+//        "C/C++",
+//        "Python",
+//        "HTML",
+//        "CSS",
+//        "JavaScript",
+//};
 
 typedef struct File {
     FILE* stream;

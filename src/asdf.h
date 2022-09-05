@@ -9,13 +9,10 @@
 
 typedef struct Asdf {
     tree_t* root;
-    leaf_t* focused_leaf;
-} asdf_t;
+    tree_t* focused;
 
-typedef enum AsdfEvent {
-    ASDF_KEY,
-    ASDF_COMMAND
-} asdf_event_t;
+    dimensions_t size;
+} asdf_t;
 
 asdf_t asdf;
 
@@ -23,8 +20,8 @@ void asdf_init();
 void asdf_run();
 void asdf_destroy();
 
-#define IF_FOCUSED(X) if(asdf.focused_leaf) \
-                        if(asdf.focused_leaf->window == w) \
+#define IF_FOCUSED(X) if(asdf.focused) \
+                        if(asdf.focused->leaf.window == w) \
                             { X }
 
 // Skip default ncurses colors

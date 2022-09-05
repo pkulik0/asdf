@@ -50,7 +50,7 @@ static void ncurses_init() {
 
 void asdf_init() {
     editor_init();
-    editor_receive(ASDF_COMMAND, "/e asdf.c");
+    editor_handle_command("/e asdf.c");
 
     ncurses_init();
 
@@ -61,13 +61,20 @@ void asdf_init() {
                                     tree_leaf(show_terminal))));
 
     tree_update(asdf.root);
-    asdf.focused_leaf = get_first_leaf(asdf.root);
+    asdf.focused = get_first_focus(asdf.root);
+    asdf.size = (dimensions_t){getmaxx(stdscr), getmaxy(stdscr)};
 }
 
 void asdf_run() {
-    int keycode;
-    while((keycode = getch())) {
-        if(keycode == KEY_ENTER) break;
+    int key;
+    while((key = getch())) {
+        if(key == '\t') {
+            // change window
+            mvprintw(0, 0, "TAB");
+        } else {
+            mvprintw(1, 0, "%d -> %c", key, key);
+            editor_handle_key(key);
+        }
         tree_update(asdf.root);
     }
 }

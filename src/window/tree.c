@@ -93,7 +93,7 @@ void tree_destroy(tree_t* tree) {
     free(tree);
 }
 
-leaf_t* get_first_leaf(tree_t* tree) {
+tree_t* get_first_focus(tree_t* tree) {
     while(tree->content != LEAF) {
         if(tree->branch.split_ratio > 0.50) {
             tree = tree->branch.left;
@@ -101,5 +101,21 @@ leaf_t* get_first_leaf(tree_t* tree) {
             tree = tree->branch.right;
         }
     }
-    return &tree->leaf;
+    return tree;
+}
+
+tree_t* move_focus_next(tree_t* root, tree_t* tree) {
+    if(!tree->parent) return tree;
+
+    tree_t* origin;
+    do {
+        origin = tree;
+        tree = tree->parent;
+        if(tree->branch.right != origin) {
+            tree = tree->branch.right;
+        } else {
+
+        }
+    } while(tree->content != LEAF);
+
 }

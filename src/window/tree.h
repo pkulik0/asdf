@@ -11,10 +11,14 @@
 typedef struct Tree tree_t;
 
 typedef void (*leaf_update_func)(WINDOW*);
+typedef void (*leaf_event_func)(const char*);
+typedef void (*leaf_key_func)(int);
 
 typedef struct Leaf {
     WINDOW* window;
     leaf_update_func on_update;
+    leaf_event_func on_event;
+    leaf_key_func on_key;
 } leaf_t;
 
 typedef struct Branch {
@@ -25,18 +29,17 @@ typedef struct Branch {
     bool is_horizontal;
 } branch_t;
 
-typedef enum Content {
-    BRANCH,
-    LEAF,
-} content_t;
-
 struct Tree {
     tree_t* parent;
 
     dimensions_t size;
     dimensions_t position;
 
-    content_t content;
+    enum Content {
+        BRANCH,
+        LEAF,
+    } content;
+
     union {
         branch_t branch;
         leaf_t leaf;
@@ -52,6 +55,8 @@ typedef void (*traverse_func)(tree_t*);
 
 void tree_update(tree_t* tree);
 
-leaf_t* get_first_leaf(tree_t* tree);
+tree_t* get_first_focus(tree_t* tree);
+tree_t* move_focus_next(tree_t* root, tree_t* tree);
+tree_t* move_focus_prev(tree_t* root, tree_t* tree);
 
 #endif //ASDF_TREE_H
