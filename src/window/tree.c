@@ -37,11 +37,11 @@ tree_t* tree_branch(double split_ratio, bool is_horizontal, tree_t* left, tree_t
     return tree;
 }
 
-void tree_traverse(tree_t* tree, traverse_func do_work) {
+static inline void __tree_traverse(tree_t* tree, void(*do_work)(tree_t*)) {
     do_work(tree);
     if(tree->content == BRANCH) {
-        tree_traverse(tree->branch.left, do_work);
-        tree_traverse(tree->branch.right, do_work);
+        __tree_traverse(tree->branch.left, do_work);
+        __tree_traverse(tree->branch.right, do_work);
     }
 }
 
@@ -80,7 +80,7 @@ void tree_update(tree_t* tree) {
     if(!tree->parent)
         tree->size = (dimensions_t){getmaxx(stdscr), getmaxy(stdscr)};
 
-    tree_traverse(tree, __tree_update);
+    __tree_traverse(tree, __tree_update);
 }
 
 void tree_destroy(tree_t* tree) {
@@ -93,29 +93,28 @@ void tree_destroy(tree_t* tree) {
     free(tree);
 }
 
-tree_t* get_first_focus(tree_t* tree) {
-    while(tree->content != LEAF) {
-        if(tree->branch.split_ratio > 0.50) {
-            tree = tree->branch.left;
-        } else {
-            tree = tree->branch.right;
-        }
-    }
+static inline tree_t* get_first_left_leaf(tree_t* tree) {
+    while(tree->content != LEAF)
+        tree = tree->branch.left;
     return tree;
 }
 
-tree_t* move_focus_next(tree_t* root, tree_t* tree) {
-    if(!tree->parent) return tree;
+tree_t* get_next_focus(tree_t* tree) {
+    if(!tree->parent) return get_first_left_leaf(tree);
 
-    tree_t* origin;
-    do {
+    tree_t* origin = tree;
+    tree = origin->parent;
+
+    if(tree->branch.left == origin) {
+        return get_first_left_leaf(tree->branch.right);
+    }
+
+    while(tree->parent && tree->branch.right == origin) {
         origin = tree;
-        tree = tree->parent;
-        if(tree->branch.right != origin) {
-            tree = tree->branch.right;
-        } else {
+        tree = origin->parent;
+    }
 
-        }
-    } while(tree->content != LEAF);
+    if(!tree->parent) return get_first_left_leaf(tree);
 
+    return get_first_left_leaf(tree->branch.right);
 }

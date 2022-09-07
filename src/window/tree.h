@@ -50,13 +50,8 @@ tree_t* tree_root(tree_t* tree);
 tree_t* tree_leaf(leaf_update_func on_update);
 tree_t* tree_branch(double split_ratio, bool is_horizontal, tree_t* left, tree_t* right);
 void tree_destroy(tree_t* tree);
-
-typedef void (*traverse_func)(tree_t*);
-
 void tree_update(tree_t* tree);
 
-tree_t* get_first_focus(tree_t* tree);
-tree_t* move_focus_next(tree_t* root, tree_t* tree);
-tree_t* move_focus_prev(tree_t* root, tree_t* tree);
+tree_t* get_next_focus(tree_t* tree);
 
 #endif //ASDF_TREE_H

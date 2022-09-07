@@ -59,20 +59,18 @@ void asdf_init() {
                         tree_branch(0.80, false,
                                     tree_leaf(editor_update),
                                     tree_leaf(show_terminal))));
-
-    tree_update(asdf.root);
-    asdf.focused = get_first_focus(asdf.root);
-    asdf.size = (dimensions_t){getmaxx(stdscr), getmaxy(stdscr)};
 }
 
 void asdf_run() {
+    tree_update(asdf.root);
+    asdf.focused = get_next_focus(asdf.root);
+    asdf.size = (dimensions_t){getmaxx(stdscr), getmaxy(stdscr)};
+
     int key;
     while((key = getch())) {
         if(key == '\t') {
-            // change window
-            mvprintw(0, 0, "TAB");
+            asdf.focused = get_next_focus(asdf.focused);
         } else {
-            mvprintw(1, 0, "%d -> %c", key, key);
             editor_handle_key(key);
         }
         tree_update(asdf.root);
